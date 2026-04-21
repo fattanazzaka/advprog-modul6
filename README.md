@@ -54,3 +54,19 @@ dan filename) ke dalam tuple hasil if-else, sehingga bagian pembacaan file dan p
 response hanya ditulis sekali. Ini mengikuti prinsip DRY.
 
 ![Commit 3 screen capture](assets/images/commit3.png)
+
+## Commit 4 Reflection Notes
+
+Pada milestone keempat, saya mensimulasikan kelemahan single-threaded server dengan
+menambahkan endpoint /sleep yang membuat thread utama tidur selama 10 detik sebelum
+memberikan respons.
+
+Ketika saya membuka dua tab browser, satu ke /sleep dan satu lagi ke / tab kedua
+tidak langsung mendapat respons meskipun request-nya sederhana. Ini terjadi karena server
+hanya memiliki satu thread, sehingga hanya bisa menangani satu koneksi dalam satu waktu.
+Selama thread sedang menjalankan thread::sleep untuk request /sleep, semua request lain
+harus mengantri dan menunggu giliran.
+
+Ini adalah masalah serius di dunia nyata: bayangkan ribuan pengguna mengakses server
+secara bersamaan. Jika satu request lambat, seluruh pengguna lain akan terdampak. Inilah
+motivasi utama mengapa kita perlu multithreading atau concurrency pada web server.
