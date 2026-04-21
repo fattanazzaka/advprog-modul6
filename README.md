@@ -89,3 +89,18 @@ worker yang membaca dari channel pada satu waktu (mutual exclusion).
 Hasilnya, ketika saya membuka /sleep dan / secara bersamaan, request / langsung diproses
 oleh worker lain tanpa menunggu /sleep selesai. Inilah keunggulan utama multithreading pada
 web server.
+
+## Commit Bonus Reflection Notes
+
+Perbedaan utama antara new dan build terletak pada cara penanganan error. Fungsi new
+menggunakan assert!(size > 0) yang akan langsung panic (crash program) jika size adalah 0.
+Ini dianggap sebagai "programmer error" yang tidak perlu ditangani secara graceful.
+
+Sebaliknya, fungsi build mengembalikan Result<ThreadPool, PoolCreationError>, sehingga
+pemanggil mendapatkan kesempatan untuk menangani error secara eksplisit menggunakan
+match, unwrap_or_else, atau operator ?. Ini lebih sesuai dengan idiom Rust yang mengutamakan
+error handling yang eksplisit dan aman.
+
+Konvensi di Rust: gunakan new jika pembuatan objek dijamin berhasil atau panic adalah
+perilaku yang wajar, dan gunakan build (atau nama lain yang mengembalikan Result) jika
+ada kemungkinan kegagalan yang perlu ditangani oleh pemanggil. 
