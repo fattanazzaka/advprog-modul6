@@ -70,3 +70,22 @@ harus mengantri dan menunggu giliran.
 Ini adalah masalah serius di dunia nyata: bayangkan ribuan pengguna mengakses server
 secara bersamaan. Jika satu request lambat, seluruh pengguna lain akan terdampak. Inilah
 motivasi utama mengapa kita perlu multithreading atau concurrency pada web server.
+
+## Commit 5 Reflection Notes
+
+Pada milestone kelima, saya mengimplementasikan ThreadPool untuk membuat server menjadi
+multithreaded. ThreadPool bekerja dengan membuat sejumlah worker thread (dalam contoh ini 4)
+yang siap menangani pekerjaan secara paralel.
+
+Cara kerja ThreadPool: saat ThreadPool::new(4) dipanggil, dibuat sebuah channel (mpsc::channel)
+untuk komunikasi antar thread, dan 4 Worker yang masing-masing menjalankan loop untuk
+menerima job dari channel. Ketika pool.execute dipanggil, closure dikirim melalui
+channel ke salah satu worker yang sedang idle, lalu worker tersebut menjalankannya.
+
+Arc<Mutex<Receiver>> digunakan agar receiver channel bisa dibagikan secara aman ke banyak
+thread: Arc untuk shared ownership antar thread, dan Mutex untuk memastikan hanya satu
+worker yang membaca dari channel pada satu waktu (mutual exclusion).
+
+Hasilnya, ketika saya membuka /sleep dan / secara bersamaan, request / langsung diproses
+oleh worker lain tanpa menunggu /sleep selesai. Inilah keunggulan utama multithreading pada
+web server.
